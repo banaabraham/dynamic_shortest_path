@@ -11,6 +11,7 @@ class tsp(object):
         self.hist = 0
         self.buku = dict()
         self.fig = 0
+        self.bug = dict()
         
     def setCoordinates(self,c):
         self.coordinates = c 
@@ -18,6 +19,7 @@ class tsp(object):
     
     def setStart(self,n):
         self.start = self.coordinates[n]
+        self.coordinates.append(self.start)
         
     def distance(self,a,b):
         return ((a[0]-b[0])**2+(a[1]-b[1])**2)**0.5
@@ -39,53 +41,33 @@ class tsp(object):
     """
             
     def dynamic_prog(self):
-        r = random
-        exp = dict()
-        recol = []
+        memo = dict()
         self.mindistance = self.alldistance(self.coordinates)
         self.hist = self.mindistance
-        for i in range(3):          
+        coordinates = self.coordinates[1:]
+        for i in range(600):
             tabu = [self.start]
-            epoch = 0
-            distance = 0         
-            while True:
-                j = 0  
-                while len(tabu) != len(self.coordinates):
-                    coordinates = self.coordinates
-                    while True:
-                        tempcor = r.sample(coordinates,1)[0]
-                        if tempcor not in tabu:
-                            tabu.append(tempcor)
-                            break  
+            distance = 0 
+            for j in range(len(coordinates)-1):
+                tabu.append(random.sample(coordinates,1)[0])
+                tb = str(tabu)
+                if tb in memo:
+                    distance+=memo[tb]
+                else:
+                    distance+=self.distance(tabu[j],tabu[j+1])
+                    memo[tb] = distance
                     
-
-                    if j==len(self.coordinates)-3:
-                        tabu.append(self.start)
-                        
-                        
-                    tb = ""
-                    for i in range(len(tabu)):
-                        tb+=str(tabu[i])
-                                       
-                    if tb in exp:
-                        distance += exp[tb]
-                    else:    
-                        distance += self.distance(tabu[j],tabu[j+1])
-                        exp[tb] = distance
-                       
-                    j+=1
-            
+            tabu.append(self.start)
+            distance += self.distance(tabu[j],tabu[j+1])
+            self.bug[str(tabu)] = distance
+            if distance<self.mindistance:
+                self.mindistance = distance
+                self.best = tabu    
+                print(distance)
                 
-                epoch +=1
-                print(epoch)
-                if self.mindistance>distance or self.mindistance==distance :
-                    self.mindistance = distance
-                    self.best = tabu
-                
-                if tabu not in recol or epoch>3:    
-                    recol.append(tabu)
-                    break
-        self.buku = exp         
+        
+        self.buku = memo         
+        
     
     """
     function to iterate solving function
@@ -117,18 +99,37 @@ if __name__ =="__main__":
     input coordinates here
     """
     
-    cities = [[0,1],[10,0],[20,20],[3,10],[5,60]]
-               
-    sales.setCoordinates(cities)
+    berlin = [[25,230],[525,1000],[580,1175],[650,1130],[1605,620],
+   [1220,580],[1465,200],[1530,5],[845,680],[725,370],[145,665],
+   [415,635],[510,875],[560,365],[300,465],[520,585],[480,415],
+   [835,625],[975,580],[1215,245],[1320,315],[1250,400],[660,180],
+   [410,250],[420,555],[575,665],[1150,1160],[700,580],[685,595],
+   [685,610],[770,610],[795,645],[720,635],[760,650],[475,960],
+   [95,260],[875,920],[700,500],[555,815],[830,485],[1170,65],
+   [830,610],[605,625],[595,360],[1740,245],[1340,725]]
+    """
+    cities = []
+    for i in range(20):
+        cities.append([random.sample(range(50),1)[0],random.sample(range(50),1)[0]])
+    """
+    
+    cities = []
+    for i in range(len(berlin)):
+        cities.append(berlin[random.sample(range(len(berlin)),1)[0]])
+    
+    bench = [[random.randint(0,30),random.randint(0,30)] for i in range(30)]
+    
+    sales.setCoordinates(berlin)
     sales.setStart(0)
-    sales.iterate(100)
+    sales.iterate(50)
     kamus = sales.buku
     
-    awal = sales.alldistance(cities)
+    bug = sales.bug
+    awal = sales.alldistance(berlin)
     hasil = sales.mindistance
     tabu = sales.best
-    sales.plot_coor(cities)
-    sales.plot_coor(tabu)
+    sales.plot_coor(berlin)
+    sales.plot_coor(sales.best)
 
 
 
