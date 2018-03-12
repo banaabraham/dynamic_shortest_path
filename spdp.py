@@ -44,7 +44,7 @@ class tsp(object):
         recol = []
         self.mindistance = self.alldistance(self.coordinates)
         self.hist = self.mindistance
-        for i in range(50):          
+        for i in range(3):          
             tabu = [self.start]
             epoch = 0
             distance = 0         
@@ -57,9 +57,16 @@ class tsp(object):
                         if tempcor not in tabu:
                             tabu.append(tempcor)
                             break  
+                    
+
+                    if j==len(self.coordinates)-3:
+                        tabu.append(self.start)
+                        
+                        
                     tb = ""
                     for i in range(len(tabu)):
                         tb+=str(tabu[i])
+                                       
                     if tb in exp:
                         distance += exp[tb]
                     else:    
@@ -67,8 +74,10 @@ class tsp(object):
                         exp[tb] = distance
                        
                     j+=1
-                    
+            
+                
                 epoch +=1
+                print(epoch)
                 if self.mindistance>distance or self.mindistance==distance :
                     self.mindistance = distance
                     self.best = tabu
@@ -95,6 +104,8 @@ class tsp(object):
         for i in c:
             x.append(i[0])
             y.append(i[1])
+        x.append(self.start[0])
+        y.append(self.start[1])
         plt.figure(self.fig)    
         plt.plot(x,y) 
         self.fig+=1
@@ -111,7 +122,7 @@ if __name__ =="__main__":
     sales.setCoordinates(cities)
     sales.setStart(0)
     sales.iterate(100)
-    kamus = asu.buku
+    kamus = sales.buku
     
     awal = sales.alldistance(cities)
     hasil = sales.mindistance
