@@ -1,5 +1,7 @@
 import random
 import matplotlib.pyplot as plt
+import math
+
 
 class tsp(object):
     
@@ -22,7 +24,7 @@ class tsp(object):
         self.coordinates.append(self.start)
         
     def distance(self,a,b):
-        return ((a[0]-b[0])**2+(a[1]-b[1])**2)**0.5
+        return math.sqrt((a[0]-b[0])**2+(a[1]-b[1])**2)
     
     
     """
@@ -45,25 +47,26 @@ class tsp(object):
         self.mindistance = self.alldistance(self.coordinates)
         self.hist = self.mindistance
         coordinates = self.coordinates[1:]
-        for i in range(600):
+        for i in range(500):
             tabu = [self.start]
-            distance = 0 
+            dis = 0 
             for j in range(len(coordinates)-1):
                 tabu.append(random.sample(coordinates,1)[0])
-                tb = str(tabu)
+                tb = str([tabu[j],tabu[j+1]])
                 if tb in memo:
-                    distance+=memo[tb]
+                    dis+=memo[tb]
                 else:
-                    distance+=self.distance(tabu[j],tabu[j+1])
-                    memo[tb] = distance
+                    newdis =self.distance(tabu[j],tabu[j+1])
+                    memo[tb] = newdis
+                    dis+=newdis
                     
             tabu.append(self.start)
-            distance += self.distance(tabu[j],tabu[j+1])
-            self.bug[str(tabu)] = distance
-            if distance<self.mindistance:
-                self.mindistance = distance
+            dis += self.distance(tabu[j],tabu[j+1])
+            self.bug[str(tabu)] = dis
+            if dis<self.mindistance:
+                self.mindistance = dis
                 self.best = tabu    
-                print(distance)
+               
                 
         
         self.buku = memo         
